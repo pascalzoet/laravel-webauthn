@@ -257,6 +257,30 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Enable insecure algorithms
+    |--------------------------------------------------------------------------
+    |
+    | Whether or not to include insecure algorithms that have been deprecated
+    | by the web-auth/cose-lib package.
+    |
+    */
+
+    'enable_insecure_algorithms' => false,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Enable non-standard algorithms
+    |--------------------------------------------------------------------------
+    |
+    | Whether or not to include algorithms that have been marked as
+    | non-standard by the web-auth/cose-lib package.
+    |
+    */
+
+    'enable_nonstandard_algorithms' => false,
+
+    /*
+    |--------------------------------------------------------------------------
     | User presence and verification
     |--------------------------------------------------------------------------
     |
