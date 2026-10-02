@@ -226,10 +226,9 @@ class WebauthnServiceProvider extends ServiceProvider
         );
         $this->app->bind(
             CoseAlgorithmManagerFactory::class,
-            fn () => tap(new CoseAlgorithmManagerFactory, function ($factory) {
+            fn ($app) => tap(new CoseAlgorithmManagerFactory, function ($factory) use ($app) {
                 // list of existing algorithms
                 $algorithms = [
-                    RSA\RS1::class,
                     RSA\RS256::class,
                     RSA\RS384::class,
                     RSA\RS512::class,
@@ -240,11 +239,29 @@ class WebauthnServiceProvider extends ServiceProvider
                     ECDSA\ES256K::class,
                     ECDSA\ES384::class,
                     ECDSA\ES512::class,
+                    EdDSA\Ed25519::class,
+                ];
+
+                $insecureAlgorithms = [
+                    RSA\RS1::class,
+                ];
+
+                $nonStandardAlgorithms = [
                     EdDSA\Ed256::class,
                     EdDSA\Ed512::class,
-                    EdDSA\Ed25519::class,
-                    EdDSA\EdDSA::class,
                 ];
+
+                if ($app['config']->get('webauthn.enable_insecure_algorithms', false)) {
+                    foreach ($insecureAlgorithms as $algorithm) {
+                        $factory->add((string) $algorithm::identifier(), new $algorithm(acknowledgeInsecureAlgorithm: true));
+                    }
+                }
+
+                if ($app['config']->get('webauthn.enable_nonstandard_algorithms', false)) {
+                    foreach ($nonStandardAlgorithms as $algorithm) {
+                        $factory->add((string) $algorithm::identifier(), new $algorithm(acknowledgeNonStandardAlgorithm: true));
+                    }
+                }
 
                 foreach ($algorithms as $algorithm) {
                     $factory->add((string) $algorithm::identifier(), new $algorithm);
